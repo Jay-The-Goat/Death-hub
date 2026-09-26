@@ -1,12 +1,18 @@
--- Get the 'RunService' from Roblox
-local runService = game:GetService("RunService")
+local RunService = game:GetService("RunService")
+local stepped = RunService.Stepped
 
--- Use 'Stepped' for efficient timing
-local stepped = runService.Stepped
+-- Helper function to safely yield to the next frame and return valid timing data
+local function fastYield()
+    local deltaTime = stepped:Wait()
+    return deltaTime, os.clock() -- Mimics standard Roblox return values
+end
 
--- Hook the 'wait' function to remove delays
-local hookWait
-hookWait = hookfunction(wait, function()
-    stepped:Wait() -- Sync with the game's update cycle
-    return nil -- Ensure 'wait' always returns instantly
-end)
+-- Hook legacy wait
+if hookfunction and wait then
+    hookfunction(wait, fastYield)
+end
+
+-- Hook modern task.wait
+if hookfunction and task and task.wait then
+    hookfunction(task.wait, fastYield)
+end
