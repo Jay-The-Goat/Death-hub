@@ -114,7 +114,7 @@ local function createHub()
 
             {"Get base", "https://pastefy.app/XSUPpfSo/raw" },
 
-            { "Cooldown", "https://pastefy.app/XSUPpfSo/raw" },
+            { "Cooldown", "https://raw.githubusercontent.com/Jay-The-Goat/Death-hub/refs/heads/main/No%20Cooldown?token=GHSAT0AAAAAAEKKYXFFQJ4ABACRP2LOCB7Y2VYG67Q" },
 
             { "Damage", "https://pastefy.app/K1NmO5YQ/raw" },
 
