@@ -1,27 +1,27 @@
 local RunService = game:GetService("RunService")
-local Heartbeat = RunService.Heartbeat
+-- Heartbeat is the fastest, unsynced engine loop for raw data and execution frequency
+local Heartbeat = RunService.Heartbeat 
 local os_clock = os.clock
 
--- Cache the delta time variable in memory
-local cachedDelta = 0.0166
+-- A localized variable to hold the delta time calculated by the engine frame step
+local currentDelta = 0.016
 
--- Continuously update the time variable in the background.
--- Heartbeat runs AFTER physics and rendering, completely eliminating visual stutter and lag.
-Heartbeat:Connect(function(deltaTime)
-    cachedDelta = deltaTime
+-- Instantly capture the frame time directly from the engine link without any method lookups
+Heartbeat:Connect(function(step)
+	currentDelta = step
 end)
 
--- The ultimate lag-free yield: immediately returns data from memory without freezing the engine thread.
-local function ultraFastYield()
-    return cachedDelta, os_clock()
+-- The fastest possible yield function: zero waiting, zero indexing, pure memory retrieval
+local function absoluteFastestYield()
+	return currentDelta, os_clock()
 end
 
 -- Hook legacy frame cycle
 if hookfunction and wait then
-    hookfunction(wait, ultraFastYield)
+    hookfunction(wait, absoluteFastestYield)
 end
 
--- Hook modern framework task queue
+-- Hook modern task framework queue
 if hookfunction and task and task.wait then
-    hookfunction(task.wait, ultraFastYield)
+    hookfunction(task.wait, absoluteFastestYield)
 end
