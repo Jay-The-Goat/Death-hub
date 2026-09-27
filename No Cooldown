@@ -1,20 +1,27 @@
 local RunService = game:GetService("RunService")
--- Utilizing RenderStepped hooks directly into the render sequence for the lowest client delay
-local renderSteppedEvent = RunService.RenderStepped
-local waitFunction = renderSteppedEvent.Wait -- Localized event index to bypass array lookup overhead
+local Heartbeat = RunService.Heartbeat
+local os_clock = os.clock
 
--- Optimized high-frequency execution yield
-local function hyperYield()
-    local deltaTime = waitFunction(renderSteppedEvent)
-    return deltaTime, os.clock() 
+-- Cache the delta time variable in memory
+local cachedDelta = 0.0166
+
+-- Continuously update the time variable in the background.
+-- Heartbeat runs AFTER physics and rendering, completely eliminating visual stutter and lag.
+Heartbeat:Connect(function(deltaTime)
+    cachedDelta = deltaTime
+end)
+
+-- The ultimate lag-free yield: immediately returns data from memory without freezing the engine thread.
+local function ultraFastYield()
+    return cachedDelta, os_clock()
 end
 
 -- Hook legacy frame cycle
 if hookfunction and wait then
-    hookfunction(wait, hyperYield)
+    hookfunction(wait, ultraFastYield)
 end
 
 -- Hook modern framework task queue
 if hookfunction and task and task.wait then
-    hookfunction(task.wait, hyperYield)
+    hookfunction(task.wait, ultraFastYield)
 end
